@@ -12,7 +12,7 @@ struct CharacterGridItemView: View {
     let character: Character
 
     var body: some View {
-        VStack(spacing: 0.0) {
+        VStack(alignment: .center, spacing: 0.0) {
             AsyncImage(
                 url: character.imageURL,
                 transaction: Transaction(animation: .easeInOut)
@@ -35,7 +35,11 @@ struct CharacterGridItemView: View {
             .id(imageId)
 
             Text(character.name)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
             Text(character.species)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
         }
     }
 
