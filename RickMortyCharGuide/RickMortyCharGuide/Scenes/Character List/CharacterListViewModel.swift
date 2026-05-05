@@ -40,35 +40,31 @@ class CharacterListViewModel {
         }
 
         isLoading = true
-        let startTime = Date()
 
         searchTask = Task {
-            defer {
-                /*
-                 Usually it would be just setting isLoading = false, but API is too fast and you can't even see the loading
-                 To make it easier to verify the loading indicator, a minimum delay of 0.4 seconds is being forced.
-                 */
-                Task {
-                    let elapsed = Date().timeIntervalSince(startTime)
-                    let minimumDelay = 0.4
-
-                    if elapsed < minimumDelay {
-                        try? await Task.sleep(for: .seconds(minimumDelay - elapsed))
-                    }
-
-                    isLoading = false
-                }
-            }
+            let startTime = ContinuousClock.now
 
             do {
                 let results = try await service.searchCharacter(searchTerm: searchText, page: page)
-
                 guard !Task.isCancelled else { return }
                 characters = results.characters
             } catch {
                 if Task.isCancelled { return }
                 characters = []
             }
+
+            let elapsed = ContinuousClock.now - startTime
+            if elapsed < Constants.minimumLoadingDuration {
+                try? await Task.sleep(for: Constants.minimumLoadingDuration - elapsed)
+            }
+            guard !Task.isCancelled else { return }
+            isLoading = false
         }
    }
+}
+
+private extension CharacterListViewModel {
+    enum Constants {
+        static let minimumLoadingDuration: Duration = .milliseconds(300)
+    }
 }
