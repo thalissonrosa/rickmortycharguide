@@ -9,10 +9,10 @@ import Foundation
 
 typealias APIHandler = RequestHandler & ResponseHandler
 
-class APILoader {
+struct APILoader {
     private let urlSession: NetworkSession
 
-    init(urlSession: NetworkSession = URLSession.shared) {
+    init(urlSession: NetworkSession) {
         self.urlSession = urlSession
     }
 

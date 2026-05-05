@@ -7,11 +7,6 @@
 
 import Foundation
 
-struct SearchResponse {
-    let characters: [Character]
-    let hasMorePages: Bool
-}
-
 struct SearchAPI: APIHandler {
     func parseResponse(data: Data) throws -> SearchResponse {
         let decoder = JSONDecoder()

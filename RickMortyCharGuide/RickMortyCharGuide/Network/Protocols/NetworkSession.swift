@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol NetworkSession {
+protocol NetworkSession: Sendable {
     func loadData(with request: URLRequest) async throws -> (Data, HTTPURLResponse)
 }
 

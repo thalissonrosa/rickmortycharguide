@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 @Observable
 class CharacterListViewModel {
     enum ContentState {
@@ -35,8 +36,12 @@ class CharacterListViewModel {
     }
     var isLoading: Bool = false
 
-    init(service: SearchService = RickMortyService()) {
+    init(service: SearchService) {
         self.service = service
+    }
+
+    convenience init() {
+        self.init(service: RickMortyService())
     }
 
     func search() {
