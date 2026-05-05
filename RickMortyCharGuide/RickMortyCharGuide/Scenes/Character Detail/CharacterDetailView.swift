@@ -38,7 +38,7 @@ struct CharacterDetailView: View {
             if let type = character.type {
                 Text(.type, type)
             }
-            Text(.createdDate, character.createdAt.formatted())
+            Text(.createdDate, character.createdAt.formatted(date: .long, time: .omitted))
         }
     }
 }
