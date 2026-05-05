@@ -28,6 +28,7 @@ Open `RickMortyCharGuide/RickMortyCharGuide.xcodeproj` in Xcode and run on a sim
 
 ## Known Limitations
 
-- **API rate limiting (429)**: The Rick and Morty API is prone to 429 responses during rapid scrolling. The app includes automatic retry with exponential backoff (up to 5 retries), but aggressive scrolling can still surface errors.
+- **API rate limiting (429)**: The Rick and Morty API is prone to 429 responses. Pagination requests include automatic retry with exponential backoff (up to 5 retries). Search requests have no retries since each keystroke cancels and replaces the previous request.
+- **Status bar during zoom transition**: When a grid item's image extends behind the status bar, the status bar text color (white-on-dark) doesn't update to black until the zoom navigation transition completes. This is a SwiftUI framework timing limitation — status bar style changes don't animate in sync with navigation transitions.
 - **Image 429 errors**: Nuke image requests can also hit rate limits. A manual retry button is shown on image load failures. Automatic retry for images is not implemented.
 - **No offline support**: The app requires an active network connection. No caching of API responses beyond Nuke's image cache.
