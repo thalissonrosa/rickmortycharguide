@@ -1,24 +1,79 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "MainViewHeader" : {
+    "createdDate" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Character List"
+            "value" : "Created Date: %@"
           }
         }
       }
     },
-    "SearchPlaceholder" : {
+    "origin" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Origin: %@"
+          }
+        }
+      }
+    },
+    "searchCTA" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start typing to search characters"
+          }
+        }
+      }
+    },
+    "searchPlaceholder" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Search characters"
+          }
+        }
+      }
+    },
+    "species" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Species: %@"
+          }
+        }
+      }
+    },
+    "status" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Status: %@"
+          }
+        }
+      }
+    },
+    "type" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type: %@"
           }
         }
       }

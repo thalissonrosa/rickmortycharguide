@@ -1,0 +1,28 @@
+//
+//  String+L10n.swift
+//  RickMortyCharGuide
+//
+//  Created by Thalisson da Rosa on 04/05/26.
+//
+
+import SwiftUI
+
+extension Text {
+    init(_ key: L10n, _ args: CVarArg...) {
+        self.init(String(format: key.localizationKey, arguments: args))
+    }
+}
+
+enum L10n: String {
+    case createdDate
+    case origin
+    case species
+    case status
+    case type
+}
+
+private extension L10n {
+    var localizationKey: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}

@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct CharacterListView: View {
+    @Namespace private var namespace
     @State private var viewModel = CharacterListViewModel()
+
     private let colums: [GridItem] = [
         GridItem(
             .adaptive(minimum: Dimensions.minimumItemWidth),
@@ -44,8 +46,10 @@ struct CharacterListView: View {
                 placement: .navigationBarDrawer(displayMode: .automatic),
                 prompt: .searchPlaceholder
             )
-            .navigationBarTitleDisplayMode(.large)
-            .navigationTitle(.mainViewHeader)
+            .navigationDestination(for: Character.self) { character in
+                CharacterDetailView(character: character)
+                    .navigationTransition(.zoom(sourceID: character.id, in: namespace))
+            }
         }
     }
 
@@ -53,11 +57,14 @@ struct CharacterListView: View {
         ScrollView {
             LazyVGrid(columns: colums, spacing: Dimensions.defaultSpacing) {
                 ForEach(viewModel.characters) { character in
-                    // Items might have different heights, we need to push everything to align it to the top
-                    VStack(spacing: 0) {
-                        CharacterGridItemView(character: character)
-                        Spacer()
+                    NavigationLink(value: character) {
+                        // Items might have different heights, we need to push everything to align it to the top
+                        VStack(spacing: 0) {
+                            CharacterGridItemView(character: character, namespace: namespace)
+                            Spacer()
+                        }
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .padding([.horizontal, .bottom], Dimensions.defaultSpacing)
@@ -67,7 +74,7 @@ struct CharacterListView: View {
     @ViewBuilder
     private var emptyView: some View {
         if viewModel.searchText.isEmpty {
-            EmptyView()
+            ContentUnavailableView(.searchCTA, systemImage: "magnifyingglass")
         } else {
             ContentUnavailableView.search
         }

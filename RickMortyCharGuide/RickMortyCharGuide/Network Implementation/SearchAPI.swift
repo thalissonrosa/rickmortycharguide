@@ -46,7 +46,7 @@ private struct SearchResponseDTO: Decodable {
                     status: characterDTO.status,
                     species: characterDTO.species,
                     origin: characterDTO.origin.name,
-                    type: characterDTO.type,
+                    type: characterDTO.type?.isEmpty == true ? nil : characterDTO.type,
                     createdAt: characterDTO.created,
                     imageURL: characterDTO.image
                 )
