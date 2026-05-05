@@ -1,5 +1,5 @@
 //
-//  SearchHandler.swift
+//  SearchAPI.swift
 //  RickMortyCharGuide
 //
 //  Created by Thalisson da Rosa on 03/05/26.
@@ -7,7 +7,10 @@
 
 import Foundation
 
-typealias SearchResponse = (characters: [Character], moreData: Bool)
+struct SearchResponse {
+    let characters: [Character]
+    let hasMorePages: Bool
+}
 
 struct SearchAPI: APIHandler {
     func parseResponse(data: Data) throws -> SearchResponse {
@@ -38,8 +41,8 @@ private struct SearchResponseDTO: Decodable {
     let results: [CharacterDTO]
 
     func buildResponse() -> SearchResponse {
-        (
-            results.map { characterDTO in
+        SearchResponse(
+            characters: results.map { characterDTO in
                 Character(
                     id: characterDTO.id,
                     name: characterDTO.name,
@@ -51,7 +54,7 @@ private struct SearchResponseDTO: Decodable {
                     imageURL: characterDTO.image
                 )
             },
-            info.next != nil
+            hasMorePages: info.next != nil
         )
     }
 }

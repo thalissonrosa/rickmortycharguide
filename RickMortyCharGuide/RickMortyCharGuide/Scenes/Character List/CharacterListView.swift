@@ -11,7 +11,7 @@ struct CharacterListView: View {
     @Namespace private var namespace
     @State private var viewModel = CharacterListViewModel()
 
-    private let colums: [GridItem] = [
+    private let columns: [GridItem] = [
         GridItem(
             .adaptive(minimum: Dimensions.minimumItemWidth),
             spacing: Dimensions.defaultSpacing
@@ -71,7 +71,7 @@ struct CharacterListView: View {
 
     private func resultsView(characters: [Character]) -> some View {
         ScrollView {
-            LazyVGrid(columns: colums, spacing: Dimensions.defaultSpacing) {
+            LazyVGrid(columns: columns, spacing: Dimensions.defaultSpacing) {
                 ForEach(characters) { character in
                     NavigationLink(value: character) {
                         // Items might have different heights, we need to push everything to align it to the top

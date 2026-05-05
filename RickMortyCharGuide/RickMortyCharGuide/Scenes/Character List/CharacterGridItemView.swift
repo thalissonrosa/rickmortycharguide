@@ -26,9 +26,3 @@ struct CharacterGridItemView: View {
         }
     }
 }
-
-private extension CharacterGridItemView {
-    enum Constants {
-        static let cornerRadius: CGFloat = 8.0
-    }
-}

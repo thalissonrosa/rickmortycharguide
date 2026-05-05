@@ -1,5 +1,5 @@
 //
-//  CharacterDetail.swift
+//  CharacterDetailView.swift
 //  RickMortyCharGuide
 //
 //  Created by Thalisson da Rosa on 04/05/26.

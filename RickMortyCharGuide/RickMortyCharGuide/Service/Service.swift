@@ -25,7 +25,7 @@ struct RickMortyService: SearchService {
                 handler: SearchAPI()
             )
         } catch APIError.httpError(statusCode: 404) {
-            return (characters: [], moreData: false)
+            return SearchResponse(characters: [], hasMorePages: false)
         }
     }
 }

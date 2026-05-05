@@ -7,7 +7,6 @@
 
 enum APIError: Error {
     case invalidURL
-    case noData
     case invalidData
     case invalidResponse
     case httpError(statusCode: Int)

@@ -1,5 +1,5 @@
 //
-//  String+L10n.swift
+//  Text+L10n.swift
 //  RickMortyCharGuide
 //
 //  Created by Thalisson da Rosa on 04/05/26.
