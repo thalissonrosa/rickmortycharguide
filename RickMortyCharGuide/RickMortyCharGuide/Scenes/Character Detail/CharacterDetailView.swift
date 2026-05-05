@@ -27,6 +27,7 @@ struct CharacterDetailView: View {
                 .clipped()
         }
         .padding()
+        .accessibilityLabel(L10n.accessibilityLabelPortrait.formatted(character.name))
     }
 
     private var textBody: some View {

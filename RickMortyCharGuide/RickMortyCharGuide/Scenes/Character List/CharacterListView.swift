@@ -32,6 +32,7 @@ struct CharacterListView: View {
                                 .padding()
                                 .background(.ultraThinMaterial)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .accessibilityLabel(L10n.accessibilityLabelLoading.localized)
                         }
                     }
                 }

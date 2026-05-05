@@ -24,5 +24,8 @@ struct CharacterGridItemView: View {
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(character.name), \(character.species)")
+        .accessibilityHint(L10n.accessibilityHintViewDetails.localized)
     }
 }
