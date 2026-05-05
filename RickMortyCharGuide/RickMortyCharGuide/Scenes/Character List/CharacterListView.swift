@@ -24,14 +24,14 @@ struct CharacterListView: View {
                 .overlay {
                     if viewModel.isLoading {
                         ZStack {
-                            Color.black.opacity(0.2)
+                            Color.black.opacity(Constants.loadingOpacity)
                                 .ignoresSafeArea()
 
                             ProgressView()
                                 .controlSize(.large)
                                 .padding()
                                 .background(.ultraThinMaterial)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .clipShape(RoundedRectangle(cornerRadius: Constants.loadingCornerRadius))
                                 .accessibilityLabel(L10n.accessibilityLabelLoading.localized)
                         }
                     }
@@ -104,7 +104,11 @@ private extension CharacterListView {
     enum Dimensions {
         static let defaultSpacing: CGFloat = 16.0
         static let minimumItemWidth: CGFloat = 150.0
+    }
 
+    enum Constants {
+        static let loadingOpacity: CGFloat = 0.2
+        static let loadingCornerRadius: CGFloat = 12.0
     }
 }
 
