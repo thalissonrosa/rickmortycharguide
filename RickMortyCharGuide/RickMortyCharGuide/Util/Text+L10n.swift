@@ -9,20 +9,23 @@ import SwiftUI
 
 extension Text {
     init(_ key: L10n, _ args: CVarArg...) {
-        self.init(String(format: key.localizationKey, arguments: args))
+        self.init(String(format: key.localized, arguments: args))
     }
 }
 
 enum L10n: String {
     case createdDate
+    case errorMessage
+    case errorTitle
     case origin
+    case retry
     case species
     case status
     case type
 }
 
-private extension L10n {
-    var localizationKey: String {
+extension L10n {
+    var localized: String {
         String(localized: String.LocalizationValue(rawValue))
     }
 }

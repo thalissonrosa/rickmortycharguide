@@ -19,9 +19,13 @@ struct RickMortyService: SearchService {
     }
 
     func searchCharacter(searchTerm: String, page: Int) async throws -> SearchResponse {
-        try await networkLoader.request(
-            router: SearchRouter.search(searchTerm: searchTerm, page: page),
-            handler: SearchAPI()
-        )
+        do {
+            return try await networkLoader.request(
+                router: SearchRouter.search(searchTerm: searchTerm, page: page),
+                handler: SearchAPI()
+            )
+        } catch APIError.httpError(statusCode: 404) {
+            return (characters: [], moreData: false)
+        }
     }
 }

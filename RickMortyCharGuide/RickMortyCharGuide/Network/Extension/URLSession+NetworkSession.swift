@@ -8,7 +8,11 @@
 import Foundation
 
 extension URLSession: NetworkSession {
-    func loadData(with request: URLRequest) async throws -> Data {
-        try await data(for: request).0
+    func loadData(with request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let (data, response) = try await data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        return (data, httpResponse)
     }
 }

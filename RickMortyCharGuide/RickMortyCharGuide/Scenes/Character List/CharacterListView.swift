@@ -20,43 +20,59 @@ struct CharacterListView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if viewModel.characters.isEmpty {
-                    emptyView
-                } else {
-                    contentView
-                }
-            }
-            .overlay {
-                if viewModel.isLoading {
-                    ZStack {
-                        Color.black.opacity(0.2)
-                            .ignoresSafeArea()
+            contentView
+                .overlay {
+                    if viewModel.isLoading {
+                        ZStack {
+                            Color.black.opacity(0.2)
+                                .ignoresSafeArea()
 
-                        ProgressView()
-                            .controlSize(.large)
-                            .padding()
-                            .background(.ultraThinMaterial)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            ProgressView()
+                                .controlSize(.large)
+                                .padding()
+                                .background(.ultraThinMaterial)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
                     }
                 }
-            }
-            .searchable(
-                text: $viewModel.searchText,
-                placement: .navigationBarDrawer(displayMode: .automatic),
-                prompt: .searchPlaceholder
-            )
-            .navigationDestination(for: Character.self) { character in
-                CharacterDetailView(character: character)
-                    .navigationTransition(.zoom(sourceID: character.id, in: namespace))
+                .searchable(
+                    text: $viewModel.searchText,
+                    placement: .navigationBarDrawer(displayMode: .automatic),
+                    prompt: .searchPlaceholder
+                )
+                .navigationDestination(for: Character.self) { character in
+                    CharacterDetailView(character: character)
+                        .navigationTransition(.zoom(sourceID: character.id, in: namespace))
+                }
+        }
+    }
+
+    @ViewBuilder
+    private var contentView: some View {
+        switch viewModel.contentState {
+        case .idle:
+            ContentUnavailableView(.searchCTA, systemImage: "magnifyingglass")
+        case .results(let characters):
+            resultsView(characters: characters)
+        case .empty:
+            ContentUnavailableView.search
+        case .error(let message):
+            ContentUnavailableView {
+                Label(L10n.errorTitle.localized, systemImage: "exclamationmark.triangle")
+            } description: {
+                Text(message)
+            } actions: {
+                Button(L10n.retry.localized) {
+                    viewModel.search()
+                }
             }
         }
     }
 
-    private var contentView: some View {
+    private func resultsView(characters: [Character]) -> some View {
         ScrollView {
             LazyVGrid(columns: colums, spacing: Dimensions.defaultSpacing) {
-                ForEach(viewModel.characters) { character in
+                ForEach(characters) { character in
                     NavigationLink(value: character) {
                         // Items might have different heights, we need to push everything to align it to the top
                         VStack(spacing: 0) {
@@ -68,15 +84,6 @@ struct CharacterListView: View {
                 }
             }
             .padding([.horizontal, .bottom], Dimensions.defaultSpacing)
-        }
-    }
-
-    @ViewBuilder
-    private var emptyView: some View {
-        if viewModel.searchText.isEmpty {
-            ContentUnavailableView(.searchCTA, systemImage: "magnifyingglass")
-        } else {
-            ContentUnavailableView.search
         }
     }
 }

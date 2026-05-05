@@ -9,12 +9,19 @@ import Foundation
 
 @Observable
 class CharacterListViewModel {
+    enum ContentState {
+        case idle
+        case results([Character])
+        case empty
+        case error(String)
+    }
+
     private var searchTask: Task<Void, Never>?
     private let service: SearchService
     // TODO: Implement pagination later
     private let page = 1
 
-    private(set) var characters: [Character] = []
+    private(set) var contentState: ContentState = .idle
     /*
      Acceptance criteria asked for a search after each keystroke.
      Ideally we would debounce it to wait until user finishes typing to avoid spamming the server
@@ -34,7 +41,7 @@ class CharacterListViewModel {
         searchTask?.cancel()
 
         guard !searchText.isEmpty else {
-            characters = []
+            contentState = .idle
             isLoading = false
             return
         }
@@ -47,10 +54,10 @@ class CharacterListViewModel {
             do {
                 let results = try await service.searchCharacter(searchTerm: searchText, page: page)
                 guard !Task.isCancelled else { return }
-                characters = results.characters
+                contentState = results.characters.isEmpty ? .empty : .results(results.characters)
             } catch {
                 if Task.isCancelled { return }
-                characters = []
+                contentState = .error(L10n.errorMessage.localized)
             }
 
             let elapsed = ContinuousClock.now - startTime

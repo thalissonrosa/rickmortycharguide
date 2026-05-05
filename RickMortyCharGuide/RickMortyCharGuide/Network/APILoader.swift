@@ -16,10 +16,14 @@ class APILoader {
         self.urlSession = urlSession
     }
 
-    @MainActor
     func request<H: APIHandler>(router: Router, handler: H) async throws -> H.ResponseDataType {
         let urlRequest = try handler.makeRequest(from: router)
-        let data = try await urlSession.loadData(with: urlRequest)
+        let (data, response) = try await urlSession.loadData(with: urlRequest)
+
+        guard (200...299).contains(response.statusCode) else {
+            throw APIError.httpError(statusCode: response.statusCode)
+        }
+
         do {
             return try handler.parseResponse(data: data)
         } catch {
