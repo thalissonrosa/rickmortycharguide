@@ -27,10 +27,18 @@ struct RickMortyService: SearchService {
         do {
             return try await networkLoader.request(
                 router: SearchRouter.search(searchTerm: searchTerm, page: page),
-                handler: SearchAPI()
+                handler: SearchAPI(),
+                maxRetries: page > 1 ? Constants.paginationRetries : Constants.searchRetries
             )
         } catch APIError.httpError(statusCode: 404) {
             return SearchResponse(characters: [], hasMorePages: false)
         }
+    }
+}
+
+private extension RickMortyService {
+    enum Constants {
+        static let searchRetries = 0
+        static let paginationRetries = 5
     }
 }

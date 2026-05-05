@@ -6,7 +6,7 @@ A SwiftUI app that lets you search and browse characters from the [Rick and Mort
 
 - **Xcode**: 26+
 - **iOS Deployment Target**: 26.0
-- **Swift**: 5.0
+- **Swift**: 6.0
 
 Open `RickMortyCharGuide/RickMortyCharGuide.xcodeproj` in Xcode and run on a simulator or device.
 

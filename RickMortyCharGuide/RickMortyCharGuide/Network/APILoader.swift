@@ -16,12 +16,30 @@ struct APILoader {
         self.urlSession = urlSession
     }
 
-    func request<H: APIHandler>(router: Router, handler: H) async throws -> H.ResponseDataType {
+    func request<H: APIHandler>(router: Router, handler: H, maxRetries: Int = 0) async throws -> H.ResponseDataType {
         let urlRequest = try handler.makeRequest(from: router)
-        let (data, response) = try await urlSession.loadData(with: urlRequest)
 
-        guard (200...299).contains(response.statusCode) else {
-            throw APIError.httpError(statusCode: response.statusCode)
+        for attempt in 0..<maxRetries {
+            let (data, response) = try await urlSession.loadData(with: urlRequest)
+
+            let isRetryable = response.statusCode == 429
+                || (500...599).contains(response.statusCode)
+            guard isRetryable else {
+                return try parseSuccessResponse(data: data, statusCode: response.statusCode, handler: handler)
+            }
+
+            try Task.checkCancellation()
+            let delay = Constants.baseDelay * pow(2.0, Double(attempt))
+            try await Task.sleep(for: .seconds(delay))
+        }
+
+        let (data, response) = try await urlSession.loadData(with: urlRequest)
+        return try parseSuccessResponse(data: data, statusCode: response.statusCode, handler: handler)
+    }
+
+    private func parseSuccessResponse<H: APIHandler>(data: Data, statusCode: Int, handler: H) throws -> H.ResponseDataType {
+        guard (200...299).contains(statusCode) else {
+            throw APIError.httpError(statusCode: statusCode)
         }
 
         do {
@@ -30,4 +48,8 @@ struct APILoader {
             throw APIError.invalidData
         }
     }
+}
+
+private enum Constants {
+    static let baseDelay = 0.5
 }
