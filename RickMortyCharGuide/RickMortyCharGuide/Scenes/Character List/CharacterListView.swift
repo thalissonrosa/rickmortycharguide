@@ -37,7 +37,7 @@ struct CharacterListView: View {
                 }
                 .searchable(
                     text: $viewModel.searchText,
-                    placement: .navigationBarDrawer(displayMode: .automatic),
+                    placement: .navigationBarDrawer(displayMode: .always),
                     prompt: .searchPlaceholder
                 )
                 .navigationDestination(for: Character.self) { character in
@@ -81,10 +81,21 @@ struct CharacterListView: View {
                         }
                     }
                     .buttonStyle(.plain)
+                    .onAppear {
+                        if character == characters.last {
+                            viewModel.loadNextPage()
+                        }
+                    }
                 }
             }
             .padding([.horizontal, .bottom], Dimensions.defaultSpacing)
+
+            if viewModel.isLoadingMore {
+                ProgressView()
+                    .padding()
+            }
         }
+        .id(viewModel.scrollID)
     }
 }
 

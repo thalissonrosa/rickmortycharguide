@@ -18,10 +18,12 @@ class CharacterListViewModel {
 
     private var searchTask: Task<Void, Never>?
     private let service: SearchService
-    // TODO: Implement pagination later
-    private let page = 1
+    private var currentPage = 1
+    private var hasMorePages = false
 
     private(set) var contentState: ContentState = .idle
+    private(set) var isLoadingMore = false
+    private(set) var scrollID = 0
     /*
      Acceptance criteria asked for a search after each keystroke.
      Ideally we would debounce it to wait until user finishes typing to avoid spamming the server
@@ -39,6 +41,9 @@ class CharacterListViewModel {
 
     func search() {
         searchTask?.cancel()
+        currentPage = 1
+        hasMorePages = false
+        scrollID += 1
 
         guard !searchText.isEmpty else {
             contentState = .idle
@@ -52,11 +57,11 @@ class CharacterListViewModel {
             let startTime = ContinuousClock.now
 
             do {
-                let results = try await service.searchCharacter(searchTerm: searchText, page: page)
-                guard !Task.isCancelled else { return }
-                contentState = results.characters.isEmpty ? .empty : .results(results.characters)
+                let characters = try await fetchCharacters(page: currentPage)
+                contentState = characters.isEmpty ? .empty : .results(characters)
+            } catch is CancellationError {
+                return
             } catch {
-                if Task.isCancelled { return }
                 contentState = .error(L10n.errorMessage.localized)
             }
 
@@ -67,7 +72,38 @@ class CharacterListViewModel {
             guard !Task.isCancelled else { return }
             isLoading = false
         }
-   }
+    }
+
+    func loadNextPage() {
+        guard hasMorePages, !isLoading, !isLoadingMore else { return }
+
+        isLoadingMore = true
+        currentPage += 1
+
+        searchTask = Task {
+            do {
+                let characters = try await fetchCharacters(page: currentPage)
+                if case .results(let existing) = contentState {
+                    contentState = .results(existing + characters)
+                }
+            } catch is CancellationError {
+                return
+            } catch {
+                currentPage -= 1
+            }
+
+            isLoadingMore = false
+        }
+    }
+
+    private func fetchCharacters(page: Int) async throws -> [Character] {
+        let results = try await service.searchCharacter(searchTerm: searchText, page: page)
+        guard !Task.isCancelled else {
+            throw CancellationError()
+        }
+        hasMorePages = results.hasMorePages
+        return results.characters
+    }
 }
 
 private extension CharacterListViewModel {
