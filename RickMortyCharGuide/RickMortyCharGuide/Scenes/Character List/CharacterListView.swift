@@ -38,7 +38,7 @@ struct CharacterListView: View {
                 .searchable(
                     text: $viewModel.searchText,
                     placement: .navigationBarDrawer(displayMode: .always),
-                    prompt: .searchPlaceholder
+                    prompt: L10n.searchPlaceholder.localized
                 )
                 .navigationDestination(for: Character.self) { character in
                     CharacterDetailView(character: character)
@@ -51,7 +51,7 @@ struct CharacterListView: View {
     private var contentView: some View {
         switch viewModel.contentState {
         case .idle:
-            ContentUnavailableView(.searchCTA, systemImage: "magnifyingglass")
+            ContentUnavailableView(L10n.searchCTA.localized, systemImage: "magnifyingglass")
         case .results(let characters):
             resultsView(characters: characters)
         case .empty:

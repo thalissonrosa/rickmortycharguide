@@ -19,6 +19,8 @@ enum L10n: String {
     case errorTitle
     case origin
     case retry
+    case searchCTA
+    case searchPlaceholder
     case species
     case status
     case type
