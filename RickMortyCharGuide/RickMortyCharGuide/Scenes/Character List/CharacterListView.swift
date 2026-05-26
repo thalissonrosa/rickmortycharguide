@@ -1,0 +1,117 @@
+//
+//  CharacterListView.swift
+//  RickMortyCharGuide
+//
+//  Created by Thalisson da Rosa on 02/05/26.
+//
+
+import SwiftUI
+
+struct CharacterListView: View {
+    @Namespace private var namespace
+    @State private var viewModel = CharacterListViewModel()
+
+    private let columns: [GridItem] = [
+        GridItem(
+            .adaptive(minimum: Dimensions.minimumItemWidth),
+            spacing: Dimensions.defaultSpacing
+        )
+    ]
+
+    var body: some View {
+        NavigationStack {
+            contentView
+                .overlay {
+                    if viewModel.isLoading {
+                        ZStack {
+                            Color.black.opacity(Constants.loadingOpacity)
+                                .ignoresSafeArea()
+
+                            ProgressView()
+                                .controlSize(.large)
+                                .padding()
+                                .background(.ultraThinMaterial)
+                                .clipShape(RoundedRectangle(cornerRadius: Constants.loadingCornerRadius))
+                                .accessibilityLabel(L10n.accessibilityLabelLoading.localized)
+                        }
+                    }
+                }
+                .searchable(
+                    text: $viewModel.searchText,
+                    placement: .navigationBarDrawer(displayMode: .always),
+                    prompt: L10n.searchPlaceholder.localized
+                )
+                .navigationDestination(for: Character.self) { character in
+                    CharacterDetailView(character: character)
+                        .navigationTransition(.zoom(sourceID: character.id, in: namespace))
+                }
+        }
+    }
+
+    @ViewBuilder
+    private var contentView: some View {
+        switch viewModel.contentState {
+        case .idle:
+            ContentUnavailableView(L10n.searchCTA.localized, systemImage: "magnifyingglass")
+        case .results(let characters):
+            resultsView(characters: characters)
+        case .empty:
+            ContentUnavailableView.search
+        case .error(let message):
+            ContentUnavailableView {
+                Label(L10n.errorTitle.localized, systemImage: "exclamationmark.triangle")
+            } description: {
+                Text(message)
+            } actions: {
+                Button(L10n.retry.localized) {
+                    viewModel.search()
+                }
+            }
+        }
+    }
+
+    private func resultsView(characters: [Character]) -> some View {
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: Dimensions.defaultSpacing) {
+                ForEach(characters) { character in
+                    NavigationLink(value: character) {
+                        // Items might have different heights, we need to push everything to align it to the top
+                        VStack(spacing: 0) {
+                            CharacterGridItemView(character: character, namespace: namespace)
+                            Spacer()
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .onAppear {
+                        if character == characters.last {
+                            viewModel.loadNextPage()
+                        }
+                    }
+                }
+            }
+            .padding([.horizontal, .bottom], Dimensions.defaultSpacing)
+
+            if viewModel.isLoadingMore {
+                ProgressView()
+                    .padding()
+            }
+        }
+        .id(viewModel.scrollID)
+    }
+}
+
+private extension CharacterListView {
+    enum Dimensions {
+        static let defaultSpacing: CGFloat = 16.0
+        static let minimumItemWidth: CGFloat = 150.0
+    }
+
+    enum Constants {
+        static let loadingOpacity: CGFloat = 0.2
+        static let loadingCornerRadius: CGFloat = 12.0
+    }
+}
+
+#Preview {
+    CharacterListView()
+}
